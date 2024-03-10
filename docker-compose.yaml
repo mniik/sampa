@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  node:
+    build:
+      dockerfile: Dockerfile
+      args:
+        uid: "1002"
+        gid: "1002"
+    image: mahdi/node:18
+    container_name: node
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - '.:/opt'
+    working_dir: /opt
+    command: tail -f /dev/null
+  #        command: node app.js
+
+
+  nest:
+    build:
+      args:
+        uid: "1002"
+        gid: "1002"
+    image: mahdi/node:18
+    container_name: nest
+    restart: always
+    environment:
+      TZ: "Asia/Tehran"
+    ports:
+      - 3001:3001
+    volumes:
+      - '.:/opt'
+    working_dir: /opt/backend
+    command: yarn start:dev
+    #command: bash -c "node app.js"
+    #command: yarn start
+    #command: bash -c "npm run dev"
+    #command: tail -f /dev/null
+
+
+
+
+  mysql:
+    image: 'mysql/mysql-server:8.0'
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    environment:
+        MYSQL_ROOT_PASSWORD: secret
+        MYSQL_DATABASE: sampa
+        MYSQL_ROOT_HOST: mysql
+        MYSQL_USER: sample
+        MYSQL_PASSWORD: secret
+        MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+        - mysql-data:/var/lib/mysql
+#  redis:
+#    image: 'redis:alpine'
+#    ports:
+#      - '6379:6379'
+#    volumes:
+#      - 'redis-data:/data'
+#    healthcheck:
+#        test:
+#            - CMD
+#            - redis-cli
+#            - ping
+#        retries: 3
+#        timeout: 5s
+
+
+  phpmyadmin:
+      image: 'phpmyadmin:latest'
+      ports:
+        - 8080:80
+      environment:
+        - PMA_ARBITRARY=1
+
+  elasticsearch:
+      image: elasticsearch:8.12.0
+      environment:
+        - discovery.type=single-node
+        - ELASTICSEARCH_USER=elastic
+        - ELASTIC_PASSWORD=password
+        - XPACK_SECURITY_ENABLED= 'false'
+      ports:
+        - 9200:9200
+        - 9300:9300
+      volumes:
+        - elasticsearch-data:/usr/share/elasticsearch/data
+
+volumes:
+    mysql-data: {}
+    elasticsearch-data: {}
+#    redis-data: {}
