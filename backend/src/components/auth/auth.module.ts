@@ -4,15 +4,16 @@ import { AuthService } from './auth.service';
 import {UsersModule} from "../users/users.module";
 import {JwtModule} from "@nestjs/jwt";
 import {ConfigService} from "@nestjs/config";
+import {SearchModule} from "../../core/search/Search.module";
 
 
 const jwtFactory = {
   useFactory: async (configService: ConfigService) => {
     return {
       global: true,
-      secret: configService.get<string>('auth.secretHash'),
+      secret: configService.get<string>('auth.secretHash', 'secret'),
       signOptions: {
-        expiresIn: configService.get('auth.authLifetime'),
+        expiresIn: configService.get('auth.authLifetime', '2h'),
       },
     };
   },
@@ -22,6 +23,7 @@ const jwtFactory = {
 @Module({
   imports:[
     UsersModule,
+    SearchModule,
     JwtModule.registerAsync(jwtFactory)
   ],
   controllers: [AuthController],

@@ -8,5 +8,7 @@ export default registerAs('app', () => ({
   url: process.env.APP_URL,
 
   timezone: process.env.APP_TIMEZONE || 'UTC',
+
+  nearbyDistance: process.env.NEARBY_DISTANCE || '100km',
 }));
 

@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule as NestConfigModule } from '@nestjs/config';
 import AppConfig from './app.config';
+import AuthConfig from "./auth.config";
+import ElasticConfig from "./elastic.config";
 
 
 @Module({
@@ -9,6 +11,8 @@ import AppConfig from './app.config';
       isGlobal: true,
       load: [
         AppConfig,
+        AuthConfig,
+        ElasticConfig
       ],
     }),
   ],

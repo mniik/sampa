@@ -4,6 +4,7 @@ import { RegisterRequestDto } from './dto/register-request.dto';
 import {HashService} from "../../core/hash/hash.service";
 import {UsersService} from "../users/users.service";
 import {JwtService} from "@nestjs/jwt";
+import {SearchService} from "../../core/search/search.service";
 
 @Injectable()
 export class AuthService {
@@ -11,6 +12,7 @@ export class AuthService {
   constructor(
       protected hashService: HashService,
       protected usersService: UsersService,
+      protected searchService: SearchService,
       private jwtService: JwtService
 
   ) {
@@ -31,7 +33,8 @@ export class AuthService {
 
   async register(request: RegisterRequestDto){
     const user = await this.usersService.createUser(request)
-    console.log(user);
+    await this.searchService.indexUser(user);
+
     return {
       access_token: await this.jwtService.signAsync({id: user.id, name:user.name, email:user.email}),
     };
